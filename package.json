@@ -16,7 +16,6 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "start": "webpack-dev-server --content-base public",
-    "postinstall": "echo installed template"
+    "start": "webpack-dev-server --content-base public"
   }
 }
