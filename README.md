@@ -24,3 +24,8 @@ npm i
 ```bash
 npm start
 ```
+
+use is project with template
+```bash
+npx degit thejavierCO/Todo-app-svelte#template name-app
+```
