@@ -17,6 +17,9 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "start": "webpack-dev-server --content-base public",
-    "postinstall":"npm start"
+    "postinstall": "npm start"
+  },
+  "dependencies": {
+    "bootstrap": "^4.5.3"
   }
 }

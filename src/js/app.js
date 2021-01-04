@@ -36,7 +36,7 @@ export class app{
             if(err.error&&err.error === "not exist task"){
                 let tasks = this.tasks;
                 if(typeof description !== "string")description = new String(description);
-                tasks.push({name,description,time:new Date()});
+                tasks.push({name,description,time:new Date(),id:this.length});
                 localStorage.setItem("tasks",JSON.stringify(tasks))
                 return tasks;
             }else if(err.error){
