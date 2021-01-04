@@ -1,10 +1,11 @@
-import App from './App.svelte';
+import App from './components/App.svelte';
+import {app} from "./js/app";
 
-const app = new App({
+const run = new App({
 	target: document.querySelector("[app]"),
 	props: {
-		text:"hi!"
+		app:new app()
 	}
 });
 
-export default app;
+export default run;
