@@ -1,60 +1,45 @@
+import {writable} from "svelte/store"
+
 export class app{
-    constructor(tasks=[]){
-        if(!Array.isArray(tasks))throw {error:"require array"};
-        tasks = JSON.stringify(tasks);
-        if(!this.existSave)localStorage.setItem("tasks",tasks);
-    }
-    getTask(name){
-        if(this.existSave){
-            let [task] = this.tasks.filter(e=>e.name==name);
-            if(task&&task.name){
-                return this.tasks.filter(e=>e.name==name);
-            }else{
-                throw {error:"not exist task"}
-            }
-        }else throw {error:"not exist save"}
-    }
-    delTask(name){
-        let [task] = this.getTask(name);
-        let result = JSON.stringify(this.tasks.filter(e=>e.name!==task.name));
-        localStorage.setItem("tasks",result);
-        return result;
-    }
-    putTask(name,description){
-        let [task] = this.getTask(name);
-        let result = JSON.stringify(this.tasks.filter(e=>e.name!==task.name));
-        result.push({name,description})
-        localStorage.setItem("tasks",result);
-        return result
-    }
-    setTask(name,description="not description"){
-        try{
-            if(typeof name === "undefined")throw {error:"not defined name"}
-            let [task] = this.getTask(name);
-            if(task&&task.name)throw {error:"exist task"}
-        }catch(err){
-            if(err.error&&err.error === "not exist task"){
-                let tasks = this.tasks;
-                if(typeof description !== "string")description = new String(description);
-                tasks.push({name,description,time:new Date(),id:this.length});
-                localStorage.setItem("tasks",JSON.stringify(tasks))
-                return tasks;
-            }else if(err.error){
-                throw err.error;
-            }else{
-                throw {error:err,status:"check"}
-            }
+    constructor(name,defaultData=[]){
+        this.name = name;
+        if(Array.isArray(defaultData)){
+            this._data = writable(defaultData,()=>!this.isExistSave?localStorage.setItem(name,defaultData):"")
+            this.update.subscribe(e=>{localStorage.setItem(name,e)})
         }
     }
-    get tasks(){
-        if(this.existSave)return JSON.parse(localStorage.getItem("tasks"))
-        else throw {error:"not exist save"}
-    }
     get length(){
-        if(this.existSave)return this.tasks.length;
-        else throw {error:"not exist save"}
+        return this.data.length;
     }
-    get existSave(){
-        return localStorage.getItem("tasks")!==null;
+    get data(){
+        return JSON.parse(localStorage.getItem(this.name))
+    }
+    set data(data){
+        localStorage.setItem(this.name,data);
+        this._data.update(_=>data);
+    }
+    get item(){
+        return (id)=>this.data.filter(e=>e.id===id);
+    }
+    set item(data){
+        let {name,description} = data;
+        let all = this.data;
+        console.log(all.map(e=>{
+            let {name:n,description:d} = e;
+            if(name===n&&description===d){
+                e.name = name;
+                e.description = description;
+                return e;
+            }
+        }))
+        all.push({name,description,date:new Date(),id:this.length})
+        localStorage.setItem(this.name,all);
+        this._data.update(_=>all);
+    }
+    get update(){
+        return (fn)=>this._data.subscribe(fn);
+    }
+    get isExistSave(){
+        return localStorage.getItem(this.name);
     }
 }
