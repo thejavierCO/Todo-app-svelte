@@ -4,6 +4,13 @@
 	export let app;
 	let newTask = ({detail})=>app.item = detail;
 	let update = (tag)=>{
+		app.data.map(task=>new Task({
+			target:tag,
+			props:{
+				type:"print",
+				task
+			}
+		}))
 		app.update(e=>{
 			tag.innerHTML = "";
 			e.map(task =>new Task({
