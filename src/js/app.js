@@ -30,8 +30,8 @@ export class App extends Storage{
         let exist = false;
         all.map(e=>id===e.id?
         ((task)=>{
-            task.name = name;
-            task.description = description;
+            if(name!=="")task.name = name;
+            if(description!=="")task.description = description;
             exist = true;
             return e;
         })(e):

@@ -19,11 +19,13 @@
     <input type="submit" value="guardar">
 </form>
 {:else if type === "print"}
-<div class="col task">
-    <div class="name"><span>{task.name}</span></div>
-    <div class="description"><span>{task.description}</span></div>
-    <div class="date"><span>{task.date}</span></div>
-    <div class="id"><span>{task.id}</span></div>
+<div class="col task" task={task.id} date={task.date}>
+    <div class="name"><span>{task.name||"untitle"}</span></div><hr>
+    <div class="description"><span>{task.description||"undescription"}</span></div>
+    <div class="tools">
+        <button on:click={({detail,target})=>event("edit",{target,parent:target.parentNode.parentNode,detail})}>edit</button>
+        <button on:click={({detail,target})=>event("delete",{target,parent:target.parentNode.parentNode,detail})}>delete</button>
+    </div>
 </div>
 {:else}
     <em>not defined type</em>
