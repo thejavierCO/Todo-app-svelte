@@ -1,45 +1,57 @@
-import {writable} from "svelte/store"
+import {Storage} from "./data"
 
-export class app{
-    constructor(name,defaultData=[]){
-        this.name = name;
-        if(Array.isArray(defaultData)){
-            this._data = writable(defaultData,()=>!this.isExistSave?localStorage.setItem(name,defaultData):"")
-            this.update.subscribe(e=>{localStorage.setItem(name,e)})
-        }
+export class App extends Storage{
+    constructor(id,start){
+        super();
+        this.name = id;
+        if(!this.isExistSave) this.save = [];
+        this._data = new this._model(this.save,start);
+        this._data.subscribe(e=>{this.save = e})
+    }
+    get update(){
+        return (f)=>this._data.subscribe(f);
     }
     get length(){
-        return this.data.length;
+        return this._data.value.length;
     }
     get data(){
-        return JSON.parse(localStorage.getItem(this.name))
+        return this._data.value;
     }
     set data(data){
-        localStorage.setItem(this.name,data);
         this._data.update(_=>data);
     }
     get item(){
-        return (id)=>this.data.filter(e=>e.id===id);
+        return (id)=>this._data.value.filter(e=>e.id===id)
     }
     set item(data){
-        let {name,description} = data;
-        let all = this.data;
-        console.log(all.map(e=>{
-            let {name:n,description:d} = e;
-            if(name===n&&description===d){
-                e.name = name;
-                e.description = description;
-                return e;
-            }
-        }))
-        all.push({name,description,date:new Date(),id:this.length})
-        localStorage.setItem(this.name,all);
-        this._data.update(_=>all);
+        let {name,description,id=this.length} = data;
+        id = parseInt(id);
+        let all = this._data.value;
+        let exist = false;
+        all.map(e=>id===e.id?
+        ((task)=>{
+            task.name = name;
+            task.description = description;
+            exist = true;
+            return e;
+        })(e):
+        ((task)=>task)(e))
+        if(!exist){
+            all.push({name,description,id,date:new Date()})
+        }
+        this.data = all;
     }
-    get update(){
-        return (fn)=>this._data.subscribe(fn);
+
+    set save(data){
+        if(Array.isArray(data))localStorage.setItem(this.name,JSON.stringify(data));
+        else if(typeof data === "string")localStorage.setItem(this.name,data);
+        else localStorage.setItem(this.name,new String(data));
     }
+    get save(){
+        return JSON.parse(localStorage.getItem(this.name));
+    }
+    
     get isExistSave(){
-        return localStorage.getItem(this.name);
+        return this.save!==null;
     }
 }

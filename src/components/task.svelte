@@ -6,22 +6,24 @@
     let newTask = ({target})=>{
         let name = target.querySelector(".nameNewTask").value;
         let description = target.querySelector(".descriptionNewTask").value;
-        event("new",{name,description})
+        let id = target.querySelector(".idNewTask").value;
+        event("new",{name,description,id})
     }
 </script>
 
 {#if type === "input"}
 <form id="newTask" on:submit|preventDefault={newTask}>
-    <input type="name" class="nameNewTask"/>
-    <input type="description" class="descriptionNewTask"/>
+    <input type="input" class="nameNewTask"/>
+    <input type="input" class="descriptionNewTask"/>
+    <input type="number" class="idNewTask" value="0"/>
     <input type="submit" value="guardar">
 </form>
 {:else if type === "print"}
 <div class="col task">
-    <div class="name">{task.name}</div>
-    <div class="description">{task.description}</div>
-    <div class="date">{task.date}</div>
-    <div class="id">{task.id}</div>
+    <div class="name"><span>{task.name}</span></div>
+    <div class="description"><span>{task.description}</span></div>
+    <div class="date"><span>{task.date}</span></div>
+    <div class="id"><span>{task.id}</span></div>
 </div>
 {:else}
     <em>not defined type</em>
