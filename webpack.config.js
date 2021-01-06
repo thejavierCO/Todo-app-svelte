@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HTMLinyect = require("html-webpack-plugin");
+const zip = require("zip-webpack-plugin");
 const path = require('path');
 
 const mode = process.env.NODE_ENV || 'development';
@@ -49,7 +50,8 @@ module.exports = {
 			filename:"index.html",
 			template:path.resolve(__dirname,"public","index.html"),
 			inject:true
-		})
+		}),
+		new zip()
 	],
 	devtool: prod ? false: 'source-map',
 	devServer: {
