@@ -2,6 +2,7 @@
 	import Main from "./Main.svelte";
 	import Task from "./task.svelte";
 	export let app;
+	app.id = "task";
 	let newTask = ({detail})=>app.item = detail;
 	let edit = ({detail:a})=>{
 		let {parent} = a;
@@ -49,6 +50,7 @@
 			})
 		})
 	}
+	console.log(app);
 </script>
 <Main>
 	<div slot="navbar">

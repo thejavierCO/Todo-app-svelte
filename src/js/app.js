@@ -51,21 +51,29 @@ export class UselocalStorage extends Data{
 
 
 export class App extends Storage{
-    constructor(id,model){
-        super(model);
-        this.id = id;
+    set id(id){
+        if(typeof id === "string"){
+            this._id = id;
+            this.add(id,[])
+        }
+    }
+    get id(){
+        return this._id;
     }
     get update(){
         return (f)=>this.get(this.id).change(f);
     }
     get length(){
-        return this.get(this.id).value.length;
+        if(this.id)return this.get(this.id).value.length;
+        else throw {error:"not defined id"}
     }
     get data(){
-        return this.get(this.id).value;
+        if(this.id)return this.get(this.id).value;
+        else throw {error:"not defined id"}
     }
     set data(data){
-        this.put(this.id,_=>data)
+        if(this.id)return this.put(this.id,_=>data);
+        else throw {error:"not defined id"}
     }
     get item(){
         return (id)=>this.data.filter(e=>e.id===id)
@@ -82,9 +90,7 @@ export class App extends Storage{
             exist = true;
             return e;
         })(e):e)
-        if(!exist){
-            all.push({name,description,id,date:new Date()})
-        }
+        if(!exist)all.push({name,description,id,date:new Date()})
         this.data = all;
     }
 }
