@@ -83,7 +83,7 @@ export class Storage{
         if(data instanceof this._model){
             this.get(key)===undefined?this._data.push({[key]:data,id:this._data.length}):null;
         }else{
-            this.get(key)===undefined?this._data.push({[key]:new this._model(data),id:this._data.length}):null;
+            this.get(key)===undefined?this._data.push({[key]:new this._model(data,undefined,{key}),id:this._data.length}):null;
         }
         return this;
     }
@@ -94,53 +94,13 @@ export class Storage{
     }
     put(key,data){
         if(typeof data === "function"){
-            let element = this.get(key);
-            return element.value = data(element);
-        }else{
-            throw {error:"require function"}
-        }
+            try{
+                let element = this.get(key);
+                return element.value = data(element.value);
+            }catch(err){throw {error:err}}
+        }else throw {error:"require function"}
     }
     get length(){
         return this._data.length;
-    }
-}
-
-export class App extends Storage{
-    constructor(id,start,model){
-        super(model)
-        this.id = id;
-        this.add(id,new this._model([],start))
-    }
-    get update(){
-        return (f)=>this.get(this.id).change(f);
-    }
-    get length(){
-        return this.get(this.id).value.length;
-    }
-    get data(){
-        return this.get(this.id).value;
-    }
-    set data(data){
-        this.put(this.id,_=>data)
-    }
-    get item(){
-        return (id)=>this.data.filter(e=>e.id===id)
-    }
-    set item(data){
-        let {name,description,id=this.length} = data;
-        id = parseInt(id);
-        let all = this.data;
-        let exist = false;
-        all.map(e=>id===e.id?
-        ((task)=>{
-            if(name!=="")task.name = name;
-            if(description!=="")task.description = description;
-            exist = true;
-            return e;
-        })(e):e)
-        if(!exist){
-            all.push({name,description,id,date:new Date()})
-        }
-        this.data = all;
     }
 }

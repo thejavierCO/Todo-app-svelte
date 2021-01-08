@@ -1,4 +1,4 @@
-import {Data} from "./data"
+import {Data,Storage} from "./data"
 
 export class UselocalStorage extends Data{
     /**
@@ -24,44 +24,56 @@ export class UselocalStorage extends Data{
         return this.save===null?false:true;
     }
     get save(){
-        return JSON.parse(localStorage.getItem(this.key))
+        try{
+            return JSON.parse(localStorage.getItem(this.key))
+        }catch(err){
+            if(/(Unexpected token \/ in JSON at position)/i.test(err.message)){
+                return localStorage.getItem(this.key)
+            }else{
+                throw {error:err}
+            }
+        }
     }
     set save(data){
-        if(typeof data === "object"||Array.isArray(data)){
-            localStorage.setItem(this.key,JSON.stringify(data));
-        }else if(typeof data === "function"){
-            localStorage.setItem(this.key,data(this));
-        }else{
-            localStorage.setItem(this.key,data);
+        try{
+            if(typeof data === "object"||Array.isArray(data)){
+                localStorage.setItem(this.key,JSON.stringify(data));
+            }else if(typeof data === "function"){
+                localStorage.setItem(this.key,data(this));
+            }else{
+                localStorage.setItem(this.key,data);
+            }
+        }catch(err){
+            console.warn(err);
         }
     }
 }
 
-export class App{
-    constructor(id,start,model){
-        this.name = id;
-        this._model = model;
-        this._data = new this._model([],start);
+
+export class App extends Storage{
+    constructor(id,model){
+        super(model);
+        this.id = id;
     }
     get update(){
-        return (f)=>this._data.change(f);
+        return (f)=>this.get(this.id).change(f);
     }
     get length(){
-        return this._data.value.length;
+        return this.get(this.id).value.length;
     }
     get data(){
-        return this._data.value;
+        return this.get(this.id).value;
     }
     set data(data){
-        this._data.value = data;
+        this.put(this.id,_=>data)
     }
     get item(){
-        return (id)=>this._data.value.filter(e=>e.id===id)
+        return (id)=>this.data.filter(e=>e.id===id)
     }
     set item(data){
         let {name,description,id=this.length} = data;
         id = parseInt(id);
-        let all = this._data.value;
+        let all = this.data;
         let exist = false;
         all.map(e=>id===e.id?
         ((task)=>{
@@ -69,8 +81,7 @@ export class App{
             if(description!=="")task.description = description;
             exist = true;
             return e;
-        })(e):
-        ((task)=>task)(e))
+        })(e):e)
         if(!exist){
             all.push({name,description,id,date:new Date()})
         }
