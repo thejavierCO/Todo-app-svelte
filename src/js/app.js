@@ -49,7 +49,6 @@ export class UselocalStorage extends Data{
     }
 }
 
-
 export class App extends Storage{
     set id(id){
         if(typeof id === "string"){

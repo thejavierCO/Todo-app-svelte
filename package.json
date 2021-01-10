@@ -21,6 +21,7 @@
     "postinstall": "npm start"
   },
   "dependencies": {
-    "bootstrap": "^4.5.3"
+    "bootstrap": "^4.5.3",
+    "uuid": "^8.3.2"
   }
 }

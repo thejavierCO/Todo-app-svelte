@@ -72,6 +72,13 @@ export class Data extends observer{
     get change(){
         return (f)=>{this.subscribe(f);return this;};
     }
+    set change(data){
+        if(typeof data === "function"){
+            this.subscribe(data);
+        }else{
+            console.warn("require function")
+        }
+    }
 }
 
 export class Storage{
