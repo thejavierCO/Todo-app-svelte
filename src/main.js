@@ -1,31 +1,27 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./style/style.css";
-// import App from './components/App.svelte';
-// import {Storage as app} from "./js/data";
-// import {UselocalStorage} from "./js/app";
-// let test = new app(UselocalStorage);
-import {StorageLocal as Storage} from "./js/data0"
+import App from './components/App.svelte';
+import {Storage} from "./js/data3";
 
-let test = new Storage()
+const app = new Storage();
 
-test.change((item,id)=>{
-    console.log(item,id)
+app.push({
+	title:"asdjioasd",
+	description:"jaisdojiasd"
 })
 
-test.push(true);
+app.push({
+	title:"asdjioasd",
+	description:"jaisdojiasd"
+})
 
-let [str] = test.get(1);
 
-str.change = (a,b,c)=>{
-    console.log(a,b,c);
-}
-
-setInterval(()=>str.data = a=>!a,1000)
+console.log(app.get(1))
 
 // const run = new App({
 // 	target: document.querySelector("[app]"),
 // 	props: {
-//         app:test.get("tasks")
+//         app:new Storage()
 // 	}
 // });
 
