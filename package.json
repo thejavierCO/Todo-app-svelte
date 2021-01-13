@@ -10,6 +10,7 @@
     "style-loader": "^0.23.1",
     "svelte": "^3.31.1",
     "svelte-loader": "^2.13.3",
+    "svelte-routing": "^1.5.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.1",
@@ -21,6 +22,9 @@
     "postinstall": "npm start"
   },
   "dependencies": {
+    "@stacks/connect": "^4.3.15",
+    "@stacks/profile": "^1.0.0-beta.20",
+    "@stacks/storage": "^1.0.0-beta.20",
     "bootstrap": "^4.5.3",
     "uuid": "^8.3.2"
   }

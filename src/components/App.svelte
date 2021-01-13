@@ -1,21 +1,26 @@
 <script>
-	import List from "./list.svelte";
-	import {onMount} from "svelte";
-	export let app;
-	let data = [];
-	let [change,update] = app.push([]);
-	const add = ({target})=>{
-		let title = target.querySelector("[title]").value
-		let des = target.querySelector("[description]").value
-		update(e=>{e.push({title,description:des});return e})
-	}
+	import { Router, Link, Route } from "svelte-routing";
+	import Home from "./Home.svelte";
+	import Dashboard from "./Dashboard.svelte";
+	import P404 from "./404.svelte";
+	let url = window.location.pathname;
 </script>
 
-<form on:submit|preventDefault={add}>
-	<input type="text" placeholder="titulo" title/>
-	<input type="text" placeholder="descripcion"  description/>
-	<input type="submit" value="enviar">
-</form>
-<div class="list">
-	<List storage={change}/>
-</div>
+<Router url={url}>
+	<nav>
+	  <Link to="/">Home</Link>
+	  <Link to="/dashboard">Dashboard</Link>
+	  <Link to="/404">404</Link>
+	</nav>
+	<div>
+		<Route path="/">
+			<Home />
+		</Route>
+		<Route path="/dashboard">
+			<Dashboard />
+		</Route>
+		<Route>
+			<P404 />
+		</Route>
+	</div>
+</Router>

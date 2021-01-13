@@ -1,4 +1,5 @@
-import {v4} from "uuid";
+import {writable,get} from "svelte/store";
+import { v4 } from "uuid";
 
 function constantPositive(number,max){
     if(number&&max&&typeof number === "number"&&typeof max === "number"){
@@ -8,36 +9,37 @@ function constantPositive(number,max){
     }else if(number===0)return 0;else throw {error:"require number"}
 }
 
-export class item extends EventTarget{
-    constructor(data,update){
-        super();
-        this._data = data;
-        if(typeof update === "function")this.on("update",update);
+export class item{
+    constructor(data,id){
+        this.id = id||v4();
+        this._data = writable(data)
     }
-    on(event,fn){this.addEventListener(event,({detail,currentTarget})=>fn(currentTarget,detail));return this}
-    call(event,data){this.dispatchEvent(new CustomEvent(event,{detail:data}));return this;}
-    get data(){return this._data}
-    set data(data){this.call("update",data);this._data = data}
+    change(fn){
+        return this.data.subscribe(fn)
+    }
+    update(fn){
+        return this.data.update(fn)
+    }
+    get data(){
+        return get(this._data);
+    }
+    set data(data){
+        this._data.set(data);
+    }
 }
 
-export class Storage{
-    constructor(fn){
-        this._data = new item([],fn);
-    }
+export class Storage extends item{
+    constructor(){super([],"home")}
     push(data){
-        const get = this.data;
-        let obj = new item(data);
-        get.push({data:obj,id:v4()})
-        this.data = get;
-        return [
-            (a)=>obj.on("update",a),
-            (a)=>obj.data = a(obj.data)
-        ];
+        this._data.update(e=>{e.push(new item(data));return e;});
+        return this;
     }
     pop(id){
         const get = this.data;
         if(id){
-            this.data = get.filter(({id:posicion})=>posicion!==this.get(id,true));
+            const data = get.filter(({id:posicion})=>posicion!==this.get(id,true));
+            if(data.length===this.data.length)throw {error:"not exist"}
+            else this.data = data;
         }else{
             get.pop();
             this.data = get;
@@ -65,12 +67,6 @@ export class Storage{
         }
     }
     get ids(){
-        return this._data.data.map(e=>e.id);
-    }
-    get data(){
-        return this._data.data;
-    }
-    set data(data){
-        this._data.data = data;
+        return this.data.map(e=>e.id);
     }
 }
