@@ -15,10 +15,13 @@ export class item{
         this._data = writable(data)
     }
     change(fn){
-        return this.data.subscribe(fn)
+        return this._data.subscribe(fn)
     }
     update(fn){
-        return this.data.update(fn)
+        return this._data.update(fn)
+    }
+    get value(){
+        return this._data;
     }
     get data(){
         return get(this._data);
