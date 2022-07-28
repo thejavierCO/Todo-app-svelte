@@ -15,8 +15,8 @@
     "webpack-dev-server": "^3.11.1"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "start": "webpack-dev-server --content-base public",
+    "start": "cross-env NODE_ENV=production webpack",
+    "dev": "webpack-dev-server --content-base public",
     "postinstall": "npm start"
   },
   "dependencies": {
