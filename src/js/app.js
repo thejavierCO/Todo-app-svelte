@@ -1,4 +1,4 @@
-import {Storage} from "./data"
+import {Storage,Store} from "./data"
 
 export class App extends Storage{
     constructor(id,start){
@@ -55,3 +55,5 @@ export class App extends Storage{
         return this.save!==null;
     }
 }
+
+export class TaskApp extends Store{}

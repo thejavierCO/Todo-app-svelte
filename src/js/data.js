@@ -1,8 +1,10 @@
-export class observer{
+import {writable,readable,get,derived} from "svelte/store"
+
+export class observer extends readable{
     constructor(start){
-        this.end = ()=>{}
-        if(typeof start === "function")this.end = start(this);
-        this.obs = [];
+        super();
+        if(typeof start === "function")this.obs = writable([],start);
+        else this.obs = writable([])
     }
     /**
      * @param {Function} c callback
@@ -77,4 +79,24 @@ export class Storage{
             throw {error:"require function"}
         }
     }
+}
+
+export class Store extends EventTarget{
+    constructor(data){
+        super();
+        this._data = writable([]);
+        this._data.subscribe((a)=>{
+            this.dispatchEvent(new CustomEvent("change",{detail:a}))
+        })
+    }
+    get data(){
+        return get(this._data)
+    }
+    set data(a){
+        this._data.set(a)
+    }
+    add(item){
+        this._data.update((data)=>{data.push(item);return data;})
+    }
+    on(evt,fn){this.addEventListener(evt,fn);}
 }
