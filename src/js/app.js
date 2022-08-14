@@ -1,5 +1,6 @@
-import {Storage,Store} from "./data"
+import {Store} from "./data"
 
+/*
 export class App extends Storage{
     constructor(id,start){
         super();
@@ -55,5 +56,7 @@ export class App extends Storage{
         return this.save!==null;
     }
 }
-
-export class TaskApp extends Store{}
+*/
+export class TaskApp extends Store{
+    
+}

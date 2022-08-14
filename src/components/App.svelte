@@ -4,7 +4,7 @@
   export let app;
   setInterval(() => {
     app.add({ id: Math.random() * 100 });
-  }, 2000);
+  }, 3000);
   app.on("change", (e) => {
     console.log(e);
   });
