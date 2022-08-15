@@ -3,31 +3,27 @@ import "./style/style.css";
 // import App from './components/App.svelte';
 import {Store} from "./js/data";
 
-let dt = JSON.parse(localStorage.getItem("data"));
-let data = new Store(dt);
-data.on("change",(e)=>{
-	localStorage.setItem("data",JSON.stringify(e.target.export()));
+const Storage = new Store();
+
+Storage.use({
+	store:"local",
+	key:"data"
+});
+
+Storage.on("change",({detail:{item,add,del}})=>{
+	console.log(add)
 })
 
-setTimeout(()=>{
-	data.add({
-		title:"asdioasd",
-		description:"iasjdioasjidojaiosd"
-	})
-	setTimeout(()=>{
-		data.add({
-			title:"asdiasdasdsadoasd",
-			description:"iasjdioasdasdasjidojaiosd"
-		})
-		setTimeout(()=>{
-			console.log(data.export());
-		},2000)
-	},1000)
-},1000)
+setInterval(()=>{
+	Storage.add({
+		title:"asdasdiasidasidsaida"+Math.round(Math.random()*100),
+		description:"aisdjijasd asjdioajsiodjioa jsoid"
+	});
+},3000)
 
-// const run = new App({
-// 	target: document.querySelector("[app]"),
-// 	props: {
-// 		app:new app([])
-// 	}
-// });
+setTimeout(()=>{
+	Storage.get(Math.round(Math.random()*(Storage.data.length-1))).data = {
+		title:Math.round(Math.random()*100),
+		description:Math.round(Math.random()*100)
+	}
+},3000)
