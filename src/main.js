@@ -1,12 +1,12 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./style/style.css";
 // import App from './components/App.svelte';
-import {Store,Item} from "./js/data";
+import {Store} from "./js/data";
 
-let data = new Store([]);
-
-data.on("change",({detail})=>{
-	console.log(detail)
+let dt = JSON.parse(localStorage.getItem("data"));
+let data = new Store(dt);
+data.on("change",(e)=>{
+	localStorage.setItem("data",JSON.stringify(e.target.export()));
 })
 
 setTimeout(()=>{
@@ -20,10 +20,10 @@ setTimeout(()=>{
 			description:"iasjdioasdasdasjidojaiosd"
 		})
 		setTimeout(()=>{
-			console.log(data.get(1))
-		},3000)
-	},3000)
-},3000)
+			console.log(data.export());
+		},2000)
+	},1000)
+},1000)
 
 // const run = new App({
 // 	target: document.querySelector("[app]"),

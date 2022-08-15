@@ -25,7 +25,12 @@ export class Item extends EventTarget{
 export class Store extends Item{
     constructor(data){
         super([]);
-        if(Array.isArray(data))this.data = data;
+        if(Array.isArray(data))this.data = data.map((e,i)=>{
+            let res = {};
+            if(typeof e === "object")if(!e.id)res.id = i;else res.id = e.id;
+            res.data = new Item(e);
+            return res;
+        });
     }
     add(data){
         this.data.push({
@@ -37,5 +42,14 @@ export class Store extends Item{
     }
     get(id){
         return this.data.filter(a=>a.id==id)[0].data;
+    }
+    del(id){
+        this.data = this.data.filter(a=>a.id!==id);
+        this.emit("delete",{id});
+        this.emit("change",this.data);
+        return this;
+    }
+    export(){
+        return this.data.map(e=>e.data.data);
     }
 }
