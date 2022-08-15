@@ -1,23 +1,41 @@
-import {writable,readable,get,derived} from "svelte/store"
+import { get, writable } from "svelte/store";
 
-export class Store extends EventTarget{
+export class Item extends EventTarget{
     constructor(data){
         super();
-        this._data = writable([],(set)=>{
-            if(Array.isArray(data))set(data);
-            else if(typeof data !== undefined) Error("require array");
-        });
-        this._data.subscribe((a)=>{this.emit("change",a)})
+        this._data = writable(data);
+        this._data.subscribe(e=>this.emit("update",e))
     }
     get data(){
-        return get(this._data)
+        return get(this._data);
     }
-    set data(a){
-        this._data.set(a)
+    set data(data){
+        this._data.update(_=>data);
     }
-    add(item){
-        this._data.update((data)=>{data.push(item);return data;})
+    on(evt,fn){
+        this.addEventListener(evt,fn);
+        return this;
     }
-    on(evt,fn){this.addEventListener(evt,fn);}
-    emit(evt,data){this.dispatchEvent(new CustomEvent(evt,{detail:data}))}
+    emit(evt,data){
+        this.dispatchEvent(new CustomEvent(evt,{detail:data}))
+        return this;
+    }
+}
+
+export class Store extends Item{
+    constructor(data){
+        super([]);
+        if(Array.isArray(data))this.data = data;
+    }
+    add(data){
+        this.data.push({
+            id:this.data.length,
+            data:new Item(data)
+        })
+        this.emit("change",this.data);
+        return this;
+    }
+    get(id){
+        return this.data.filter(a=>a.id==id)[0].data;
+    }
 }
