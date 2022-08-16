@@ -1,121 +1,42 @@
 <script>
   import Main from "./Main.svelte";
-  import Task from "./task.svelte";
+  import Input from "./input.svelte";
   export let app;
-  /*
-    let newTask = ({ detail: { id, name, description } }) => {
-      id = +id;
-      if (typeof id == "number") app.get(id).data = { name, description };
-      else app.add({ name, description });
+  const data = ({ detail }) => {
+    let [name, description, id] = detail.map((e) => ({
+      [e.tag.className]: e,
+      key: e.tag.className,
+    }));
+    let item = app.get(+id[id.key].value);
+    let d = {
+      name: name[name.key].value,
+      description: description[description.key].value,
     };
-    let delTask = ({ detail: a }) => {
-      let { parent } = a;
-      let id = parent.getAttribute("task");
-      id = parseInt(id);
-      app.del(id);
-    };
-    let update = (tag) => {
-      app.data
-      .map(
-        (task) =>
-        new Task({
-          target: tag,
-          props: {
-            type: "print",
-            task: task.data,
-          },
-        })
-        )
-        .map((e) => {
-          e.$on("edit", edit);
-          e.$on("delete", delTask);
-        });
-        app.on("change", ({ detail: { add: e } }) => {
-          if (e) {
-            tag.innerHTML = "";
-            e.map(
-              (task) =>
-              new Task({
-                target: tag,
-                props: {
-                  type: "print",
-                  task: task.data,
-                },
-              })
-          ).map((e) => {
-            e.$on("edit", edit);
-            e.$on("delete", delTask);
-          });
-        }
-      });
-    };
-  */
-  const edit = ({ detail: a }) => {
-    let { parent } = a;
-    let controlId = document
-      .querySelector("#newTask")
-      .querySelector(".idNewTask");
-    let controlName = document
-      .querySelector("#newTask")
-      .querySelector(".nameNewTask");
-    let controlDescription = document
-      .querySelector("#newTask")
-      .querySelector(".descriptionNewTask");
-    let id = parent.getAttribute("task");
-    let name = parent.querySelector(".name").textContent;
-    let description = parent.querySelector(".description").textContent;
-    id = parseInt(id);
-    controlId.value = id;
-    controlName.value = name;
-    controlDescription.value = description;
+    if (item) item.data = d;
+    else app.add(d);
   };
-  const newTask = ({ detail: { id, name, description } }) => {
-    let task = app.get(id);
-    if (task) {
-      task.data = { id, name, description };
-    } else app.add({ id, name, description });
-  };
-
-  const delTask = ({ detail: a }) => {
-    let { parent } = a;
-    let id = parent.getAttribute("task");
-    id = parseInt(id);
-    app.del(id);
-  };
-  const update = (tag) => {
-    app.data
-      .map(
-        (task) =>
-          new Task({
-            target: tag,
-            props: {
-              type: "print",
-              task: task.data,
-            },
-          })
-      )
-      .map((e) => {
-        e.$on("edit", edit);
-        e.$on("delete", delTask);
-      });
-    app.on("change", ({ detail: { add, del } }) => {
-      if (add || del) {
-        tag.innerHTML = "";
-        (add || del)
-          .map(
-            (task) =>
-              new Task({
-                target: tag,
-                props: {
-                  type: "print",
-                  task: task.data,
-                },
-              })
-          )
-          .map((e) => {
-            e.$on("edit", edit);
-            e.$on("delete", delTask);
-          });
+  const mount = ({ detail }) => {
+    let [name, description, id] = detail;
+    id.value = app.data.length;
+    id.tag.max = app.data.length;
+    id.tag.min = 0;
+    id.tag.addEventListener("change", ({ target }) => {
+      const item = app.get(+target.value);
+      if (item) {
+        let { name: n, description: d } = item.data;
+        name.value = n;
+        description.value = d;
+      } else {
+        name.value = "";
+        description.value = "";
+      }
+    });
+    app.on("change", ({ detail: { add, del, item } }) => {
+      if (add) {
+        id.tag.max = add.length;
+        id.value = add.length;
+        name.value = "";
+        description.value = "";
       }
     });
   };
@@ -129,8 +50,8 @@
   </div>
   <div slot="content" class="col">
     <div class="row render">
-      <Task type="input" task={app} on:new={newTask} />
+      <Input on:data={data} on:mount={mount} />
     </div>
-    <div class="row row-cols-4" use:update />
+    <div class="row row-cols-4" />
   </div>
 </Main>
