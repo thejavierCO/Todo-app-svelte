@@ -62,7 +62,7 @@ export class Store extends Item{
     get(id){
         let data = this.data.filter(a=>a.id==id)
         if(data[0])return data[0].data;
-        else throw new Error("not exist item");
+        else this.emit("error",new Error("not exist item"));
     }
     del(id){
         this.data = this.data.filter(a=>a.id!==id);
