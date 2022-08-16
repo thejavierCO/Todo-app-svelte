@@ -1,6 +1,7 @@
 <script>
   import Main from "./Main.svelte";
   import Input from "./input.svelte";
+  import Print from "./print.svelte";
   export let app;
   const data = ({ detail }) => {
     let [name, description, id] = detail.map((e) => ({
@@ -52,6 +53,10 @@
     <div class="row render">
       <Input on:data={data} on:mount={mount} />
     </div>
-    <div class="row row-cols-4" />
+    <div class="row row-cols-4">
+      <Print {app} let:task>
+        <span>task</span>
+      </Print>
+    </div>
   </div>
 </Main>
