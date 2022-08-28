@@ -54,9 +54,7 @@
       <Input on:data={data} on:mount={mount} />
     </div>
     <div class="row row-cols-4">
-      <Print {app} let:task>
-        <span>task</span>
-      </Print>
+      <Print {app} let:task />
     </div>
   </div>
 </Main>
