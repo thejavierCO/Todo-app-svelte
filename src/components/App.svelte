@@ -50,11 +50,9 @@
     </div>
   </div>
   <div slot="content" class="col">
-    <div class="row render">
+    <div class="justify-content-center render row">
       <Input on:data={data} on:mount={mount} />
     </div>
-    <div class="row row-cols-4">
-      <Print {app} let:task />
-    </div>
+    <Print {app} let:task />
   </div>
 </Main>

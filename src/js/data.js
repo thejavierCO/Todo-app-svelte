@@ -6,6 +6,9 @@ export class Item extends EventTarget{
         this._data = writable(data);
         this._data.subscribe(e=>this.emit("update",e))
     }
+    get store(){
+        return this._data;
+    }
     get data(){
         return get(this._data);
     }
