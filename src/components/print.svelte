@@ -1,9 +1,5 @@
 <script>
-  import { onMount } from "svelte";
   export let app;
-  onMount(() => {
-    console.log(app, document.querySelector("div.print"));
-  });
 </script>
 
 <div class="row row-cols-4">
