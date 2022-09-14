@@ -14,7 +14,6 @@
     display: flex;
     word-break: break-word;
     width: 100%;
-    height: 100%;
   }
   div.print_item span.task_title {
     background-color: rgba(0, 0, 0, 0.2);

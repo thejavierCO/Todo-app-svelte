@@ -53,6 +53,6 @@
     <div class="justify-content-center render row">
       <Input on:data={data} on:mount={mount} />
     </div>
-    <Print {app} let:task />
+    <Print {app} />
   </div>
 </Main>
