@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte"
   import Item from "./item.svelte";
   export let app;
 </script>
