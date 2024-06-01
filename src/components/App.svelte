@@ -51,8 +51,8 @@
   </div>
   <div slot="content" class="col">
     <div class="justify-content-center render row">
-      <Input on:data={data} on:mount={mount} />
+      <!-- <Input on:data={data} on:mount={mount} /> -->
     </div>
-    <Print {app} />
+    <!-- <Print {app} /> -->
   </div>
 </Main>

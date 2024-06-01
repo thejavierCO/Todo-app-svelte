@@ -2,10 +2,11 @@
   import { onMount } from "svelte"
   import Item from "./item.svelte";
   export let app;
+  let store = app.store;
 </script>
 
 <div class="row row-cols-4">
-  {#each app.data as { data: item }}
+  {#each $store as { data: item }}
     <div class="print">
       <Item title={item.data.name} description={item.data.description} />
     </div>
