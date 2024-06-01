@@ -1,16 +1,11 @@
 <script>
-  import { onMount } from "svelte"
   import Item from "./item.svelte";
-  export let app;
-  let store = app.store;
+  export let data;
 </script>
 
-<div class="row row-cols-4">
-  {#each $store as { data: item }}
-    <div class="print">
-      <Item title={item.data.name} description={item.data.description} />
-    </div>
-  {/each}
+<div class="print">
+  <Item title={data.name} description={data.description} />
+  <slot name="actions"></slot>
 </div>
 
 <style>
