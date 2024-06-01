@@ -12,7 +12,11 @@
   <div slot="content" class="col">
     <Store let:add let:edit let:del useLocalStorage>
       <div slot="input" class="justify-content-center render row">
-        <form on:submit|preventDefault={({target:{nameItem,descriptionItem}})=>add({name:nameItem.value, description:descriptionItem.value})}>
+        <form on:submit|preventDefault={({target:{nameItem,descriptionItem}})=>{
+            add({name:nameItem.value, description:descriptionItem.value})
+            nameItem.value = ""
+            descriptionItem.value = ""
+          }}>
           <input type="text" placeholder="name" id="nameItem"/>
           <input type="text" placeholder="description" id="descriptionItem"/>
           <input type="submit" value="add">
@@ -23,31 +27,12 @@
           <div class="card-body">
             <h5 class="card-title">{data.name}</h5>
             <p class="card-text">{data.description}</p>
-              <button on:click={()=>edit(id)} class="btn btn-primary">edit</button>
               <button on:click={()=>{
-                // document.querySelector('.modalEdit').focus();
-              }} class="btn btn-danger">delete</button>
+                console.warn("not working")
+              }} class="btn btn-primary">edit</button>
+              <button on:click={()=>del(id)} class="btn btn-danger">delete</button>
           </div>
         </div>
-        <!-- <div class="modalEdit">
-          <div class="modal" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Modal title</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p>Modal body text goes here.</p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-              </div>
-            </div>
-          </div>  
-        </div> -->
       </div>
     </Store>
   </div>
