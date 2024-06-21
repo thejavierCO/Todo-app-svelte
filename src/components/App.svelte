@@ -36,8 +36,8 @@
           <input type="submit" value="add">
         {/if}
       </form>
-      <div slot="print" let:id let:data class="card bg-secondary text-white">
-        <div class="card-body" class:done={data.done} class:text-dark={data.done}>
+      <div slot="print" let:id let:data class="card bg-secondary text-white overflow-auto" style="height:190px;">
+        <div class="card-body" class:done={data.done} class:text-dark={data.done} >
           <h5 class="card-title">{data.title}</h5>
           <p class="card-text">{data.description}</p>
             <button on:click={()=>document
