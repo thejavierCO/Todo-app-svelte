@@ -2,6 +2,7 @@
   import Main from "./Main.svelte";
   import Store from "./store.svelte";
   let isEdit = false;
+  let checked = false;
 </script>
 
 <Main>
@@ -22,14 +23,18 @@
           });
           if(isEdit) edit(data.id,data);else add(data);
           inputs.forEach((a)=>{
-            if(a.type == "checkbox") a.checked = false;else a.value = ""
+            if(a.type == "checkbox"){
+              a.checked = false;
+              checked = false; 
+            }else a.value = ""
           });
           if(isEdit!=false)isEdit = false;
         }} class="justify-content-center render row">
         <input type="text" placeholder="title" name="title"/>
         <input type="text" placeholder="description" name="description"/>
-        <input type="checkbox" name="done">
+        <input type="checkbox" name="done" id="check" bind:checked style="display: none;"/>
         <input type="text" name="id" disabled/>
+        <label for="check" class:bg-success={checked}>Realizado</label>
         {#if isEdit}
           <input type="submit" value="edit">
         {:else}
