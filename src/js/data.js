@@ -1,93 +1,113 @@
-import { get, writable } from "svelte/store";
+import { writable, readable } from "svelte/store";
 
-export class Item extends EventTarget{
-    constructor(data){
-        super();
-        this._data = writable(data);
-        this._data.subscribe(e=>this.emit("update",e))
-    }
-    get store(){
-        return this._data;
-    }
-    get data(){
-        return get(this._data);
-    }
-    set data(data){
-        this._data.update(_=>data);
-    }
-    on(evt,fn){
-        this.addEventListener(evt,fn);
-        return this;
-    }
-    emit(evt,data){
-        this.dispatchEvent(
-            data?
-            new CustomEvent(evt,{detail:data}):
-            new Event(evt)
-        )
-        return this;
-    }
+export class ConutTime extends EventTarget {
+  constructor(callbackUnSuscribe = () => this.emit("UnSuscribe", this)) {
+    super();
+    this._posicion = readable(0, (set) => {
+      function updateClock(_) {
+        set(new Date().getTime())
+        window.requestAnimationFrame(updateClock);
+      }
+      window.requestAnimationFrame(updateClock);
+      return _ => callbackUnSuscribe()
+    })
+  }
+  get Time() {
+    return this._posicion
+  }
+  emit(name, data) {
+    if (data) return this.dispatchEvent(new CustomEvent(name, { detail: data }))
+    else return this.dispatchEvent(new Event(name))
+  }
+  on(name, callback) {
+    this.addEventListener(name, callback)
+  }
 }
 
-export class Store extends Item{
-    constructor(data){
-        super([]);
-        if(Array.isArray(data))this.import(data);
-    }
-    use(config){
-        let {store,key} = config;
-        if(!key)key = "data";
-        const condi = ({
-            local:localStorage,
-            session:sessionStorage
-        })[store]
-        
-        condi?((a)=>{
-            const data = a.getItem(key);
-            if(data)this.import(data)
-            else a.setItem(key,JSON.stringify([]))
-        })(condi):false;
-
-        this.on("change",({target})=>condi?
-        condi.setItem(key,JSON.stringify(target.export())):
-        false
-        )
-        return this;
-    }
-    add(data){
-        this.data.push({
-            id:this.data.length,
-            data:new Item(data)
-        })
-        this.emit("change",{add:this.data});
-        return this;
-    }
-    get(id){
-        let data = this.data.filter(a=>a.id===id)
-        if(data[0])return data[0].data;
-        else this.emit("error",new Error("not exist item"));
-    }
-    del(id){
-        this.data = this.data.filter(a=>a.id!==id);
-        this.emit("change",{del:id});
-        return this;
-    }
-    export(){
-        return this.data.map(e=>e.data.data);
-    }
-    import(data){
-        if(typeof data === "string"){
-            this.import(JSON.parse(data))
-        }else if(Array.isArray(data)){
-            this.data = data.map((e,i)=>{
-                let res = {};
-                if(!e.id)res.id = i;else res.id = e.id;
-                res.data = new Item(e);
-                res.data.on("update",({detail})=>this.emit("change",{item:{data:detail,id:i}}))
-                return res;
-            });
-            this.emit("change",{import:this.data});
-        }else throw new Error("require string or array");
-        return this;
-    }
+export class TimeView {
+  constructor(TimeMillis) {
+    this._current_time = TimeMillis;
+  }
+  current() {
+    return this._current_time
+  }
+  get Hours() {
+    return new String(Math.trunc(this.current() / 1000 / 60 / 60) % 60).padStart(2, "0")
+  }
+  get Minutes() {
+    return new String(Math.trunc(this.current() / 1000 / 60) % 60).padStart(2, "0")
+  }
+  get Seconds() {
+    return new String(Math.trunc(this.current() / 1000) % 60).padStart(2, "0")
+  }
+  get Miliseconds() {
+    return Math.trunc(this.current())
+  }
+  getCurrentTimeBase(max) {
+    return Number(
+      parseFloat(
+        ((this.current() * 1) / (max * 1000)).toString()
+      ).toFixed(3)
+    )
+  }
 }
+
+export class Temporizador extends ConutTime {
+  constructor(TimeMillis, time, status) {
+    super();
+    this.status = status || "Stop";
+    this.time = time || { start: 0, pause: 0, end: 0 };
+    this.timeTotal = TimeMillis;
+    this._current_time = 0;
+    this.Destroy = this.Time.subscribe((data) => {
+      if (this.status == "Play") this.play(data);
+      else if (this.status == "Pause") this.pause(data);
+      else if (this.status == "Stop") this.stop(true);
+    })
+  }
+  get current_time() {
+    return this._current_time
+  }
+  set current_time(data) {
+    this._current_time = data;
+  }
+  play(data) {
+    this.status = "Play";
+    if (data) {
+      if (this.time.start == 0) this.time.start = data;
+      if (this.time.end == 0) this.time.end = this.time.start + this.timeTotal;
+      if (this.time.pause != 0) {
+        let posPause = Math.round(this.time.pause - this.time.start),
+          timePause = this.time.end - this.time.start,
+          timeOff = timePause - posPause;
+        this.time.start = data;
+        this.time.end = this.time.start + timeOff;
+        this.time.pause = 0;
+      }
+      this.current_time = ((a) => (a < 0 ? 0 : a))(this.time.end - data);
+      if (this.time.end - this.time.start < 0 || data > this.time.end || this.current_time == 0)
+        this.stop();
+      this.emit("current_status_timer", { status: this.status, time: this.time });
+    }
+  }
+  pause(data) {
+    this.status = "Pause";
+    if (data && this.time.pause == 0) {
+      this.time.pause = data;
+      this.emit("current_status_timer", { status: this.status, time: this.time });
+    }
+  }
+  stop(forceUpdate) {
+    if (this.status != "Stop" || forceUpdate)
+      this.emit("current_status_timer", { status: this.status, time: this.time });
+    this.status = "Stop";
+    this.time.start = 0;
+    this.time.pause = 0;
+    this.time.end = 0;
+    this.current_time = 0;
+  }
+  get formatTime() {
+    return new TimeView(this.current_time)
+  }
+}
+
