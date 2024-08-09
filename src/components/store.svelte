@@ -10,7 +10,6 @@
 
   const store = db.store;
 
-  console.log(this)
   onDestroy(() => {
     if (useLocalStorage) db.Destroy();
   });
