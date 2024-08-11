@@ -1,6 +1,6 @@
 <script>
   import Main from "./Main.svelte";
-  import Store from "./store.svelte";
+  import Store from "./Db Components/store.svelte";
   let isEdit = false;
   let checked = false;
 </script>
